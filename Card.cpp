@@ -4,6 +4,10 @@
 #include "Card.hpp"
 #include <string>
 #include <vector>
+#include <sstream>
+#include "unit_test_framework.hpp"
+
+
 
 using namespace std;
 
@@ -121,7 +125,8 @@ std::istream & operator>>(std::istream &is, Suit &suit) {
 //   return is;
 // }
 
-Card::Card() {};
+Card::Card() 
+  : rank(TWO), suit(SPADES){};
 
 Card::Card(Rank rank_in, Suit suit_in) 
   : rank(rank_in), suit(suit_in) {}
@@ -132,6 +137,10 @@ Rank Card::get_rank() const {
 
 Suit Card::get_suit() const {
   return suit;
+}
+
+Suit Card::get_suit(Suit trump) const {
+  return suit; // ! Double Check this
 }
 
 bool Card::is_face_or_ace() const {
@@ -179,11 +188,11 @@ ostream & operator<<(ostream &os, const Card &card) {
 
   vector<string> suits = {
     "Spades", "Hearts", "Clubs", "Diamonds"
-  }
+  };
 
   Rank card_rank = card.get_rank();
   Suit card_suit = card.get_suit();
-  os << ranks[card_rank] << " of " << suits[card_suit] << endl;
+  os << ranks[card_rank] << " of " << suits[card_suit];
   return os;
 }
 
@@ -197,7 +206,7 @@ istream & operator>>(istream & is, Card &card) {
 
   string str_suit;
   is >> str_suit;
-  card.rank = string_to_suit(str_suit);
+  card.suit = string_to_suit(str_suit);
   return is;
 } 
 
@@ -275,19 +284,22 @@ bool operator!=(const Card &lhs, const Card &rhs) {
 
 Suit Suit_next(Suit suit) {
 
-  
   if (suit == 0) {
-    return suit.CLUBS
+    return CLUBS;
   }
   else if (suit == 1) {
-    return suit.DIAMONDS;
+    return DIAMONDS;
   }
   else if (suit == 2) {
-    return suit.SPADES;
+    return SPADES;
   }
   else if (suit == 3) {
-    return suit.HEARTS;
+    return HEARTS;
   }
+  else {
+    assert(false);
+  }
+
 }
 
 bool Card_less(const Card &a, const Card &b, Suit trump) {
@@ -297,7 +309,7 @@ bool Card_less(const Card &a, const Card &b, Suit trump) {
   } else if (b.get_suit() == trump) {
     return true;
   } else if (a.get_suit() == trump) {
-    return false
+    return false;
   }
   return a < b;
 }
@@ -315,5 +327,23 @@ bool Card_less(const Card &a, const Card &b, const Card &led_card, Suit trump) {
   } else if (a.get_suit() == led_suit) {
     return false;
   }
+  else {
+    assert(false);
+  }
 
 }
+
+
+// int main() {
+//     Card two_spades = Card();
+
+//     cout << two_spades.get_rank() << endl;
+//     // ASSERT_EQUAL(two_spades.get_rank(), TWO);
+//     // ASSERT_EQUAL(two_spades.get_suit(), SPADES);
+
+//     // Card three_spades = Card(THREE, SPADES);
+//     // ASSERT_EQUAL(three_spades.get_rank(), THREE);
+//     // ASSERT_EQUAL(three_spades.get_suit(), SPADES);
+//     // ASSERT_EQUAL(three_spades.get_suit(CLUBS), SPADES);
+
+// }
