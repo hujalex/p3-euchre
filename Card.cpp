@@ -140,7 +140,10 @@ Suit Card::get_suit() const {
 }
 
 Suit Card::get_suit(Suit trump) const {
-  return suit; // ! Double Check this
+  if (is_left_bower(trump)) {
+        return trump;
+    }
+    return suit; // ! Double Check this
 }
 
 bool Card::is_face_or_ace() const {
@@ -179,21 +182,10 @@ bool Card::is_left_bower(Suit trump) const {
 bool Card::is_trump(Suit trump) const {
   return suit == trump;
 }
-
+//changed
 ostream & operator<<(ostream &os, const Card &card) {
-  vector<string> ranks = {
-    "Two", "Three", "Four", "Five", "Six", "Seven", "Eight",
-    "Nine", "Ten", "Jack", "Queen", "King", "Ace"
-  };
-
-  vector<string> suits = {
-    "Spades", "Hearts", "Clubs", "Diamonds"
-  };
-
-  Rank card_rank = card.get_rank();
-  Suit card_suit = card.get_suit();
-  os << ranks[card_rank] << " of " << suits[card_suit];
-  return os;
+   os << RANK_NAMES[card.get_rank()] << " of " << SUIT_NAMES[card.get_suit()];
+   return os;
 }
 
 istream & operator>>(istream & is, Card &card) {
