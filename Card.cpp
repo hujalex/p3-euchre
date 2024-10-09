@@ -257,21 +257,11 @@ bool operator>=(const Card &lhs, const Card &rhs) {
 }
 
 bool operator==(const Card &lhs, const Card &rhs) {
-  if (lhs.get_rank() == rhs.get_rank()) {
-    if (lhs.get_suit() == rhs.get_suit()) {
-      return true;
-    }
-  }
-  return false;
+  return lhs.get_rank() == rhs.get_rank() && lhs.get_suit() == rhs.get_suit();
 }
 
 bool operator!=(const Card &lhs, const Card &rhs) {
-  if (lhs.get_rank() == rhs.get_rank()) {
-    if (lhs.get_suit() == rhs.get_suit()) {
-      return false;
-    }
-  }
-  return true;
+  return !(lhs == rhs);
 }
 
 Suit Suit_next(Suit suit) {
