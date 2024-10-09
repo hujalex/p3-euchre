@@ -35,8 +35,9 @@ Pack::Pack(std::istream& pack_input) {
  Card Pack::deal_one()
  {
     assert(next < PACK_SIZE);
-    return(cards[next]);
+    Card dealt = cards[next];
     next++;
+    return dealt;
  }
  void Pack::reset()
  {
@@ -57,13 +58,13 @@ void Pack::shuffle()
             temp[j] = cards[k];
             j++;
         }
+        cards = temp;
     }
     cards = temp;
     reset();
 }
-bool Pack::empty() const
-{
-    assert(next >= PACK_SIZE);
+bool Pack::empty() const {
+    return(next >= PACK_SIZE);
 }
 
  
