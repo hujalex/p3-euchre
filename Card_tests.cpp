@@ -57,6 +57,70 @@ TEST(test_card_extraction) {
     ASSERT_EQUAL(c, Card(THREE, SPADES));
 }
 
+TEST(operator_greater_than) {
+    Card less = Card(TWO, SPADES);
+    Card More = Card(ACE, SPADES);
+    ASSERT_EQUAL(More > less, true);
+
+    less = Card(THREE, DIAMONDS);
+    More = Card(FOUR, DIAMONDS);
+    ASSERT_EQUAL(More > less, true);
+}
+
+TEST(operator_less_than) {
+    Card less = Card(TWO, SPADES);
+    Card More = Card(ACE, SPADES);
+    ASSERT_EQUAL(less < More, true);
+
+    less = Card(THREE, DIAMONDS);
+    More = Card(FOUR, DIAMONDS);
+    ASSERT_EQUAL(less > More, false);
+}
+
+TEST(operator_less_equal) {
+    Card less = Card(TWO, SPADES);
+    Card More = Card(ACE, HEARTS);
+    ASSERT_EQUAL(less <= More, true);
+
+    less = Card(THREE, DIAMONDS);
+    More = Card(THREE, DIAMONDS);
+    ASSERT_EQUAL(less <= More, true);
+}
+
+
+TEST(operator_greater_equal) {
+    Card less = Card(TWO, SPADES);
+    Card More = Card(ACE, HEARTS);
+    ASSERT_EQUAL(less >= More, false);
+
+    less = Card(THREE, DIAMONDS);
+    More = Card(THREE, DIAMONDS);
+    ASSERT_EQUAL(More >= less, true);
+}
+
+
+TEST(operator_equal) {
+    Card less = Card(TWO, SPADES);
+    Card More = Card(ACE, HEARTS);
+    ASSERT_EQUAL(less == More, false);
+
+    less = Card(THREE, DIAMONDS);
+    More = Card(THREE, DIAMONDS);
+    ASSERT_EQUAL(More == less, true);
+}
+
+TEST(operator_not_equal) {
+    Card less = Card(FOUR, SPADES);
+    Card More = Card(FOUR, SPADES);
+    ASSERT_EQUAL(less != More, false);
+
+    less = Card(TWO, DIAMONDS);
+    More = Card(THREE, DIAMONDS);
+    ASSERT_EQUAL(More != less, true);
+
+}
+
+
 // Add more test cases here
 
 TEST_MAIN()

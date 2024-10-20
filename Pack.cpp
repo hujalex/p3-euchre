@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Pack::Pack() {
+Pack::Pack() : next(0) {
     int card_index = 0;
     for(int suit = SPADES; suit <= DIAMONDS; suit++)
     {
@@ -21,7 +21,7 @@ Pack::Pack() {
         }
     }
 }
-Pack::Pack(std::istream& pack_input) {
+Pack::Pack(std::istream& pack_input) : next(0) {
     string rank;
     string suit;
     string of;

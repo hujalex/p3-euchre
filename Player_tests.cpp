@@ -17,20 +17,7 @@ TEST(test_empty_name)
     ASSERT_EQUAL(empty->get_name(), "");
     delete empty;
 }
-TEST(test_add_card) {
-    Player* player = Player_factory("Bob", "Simple");
-    Card c1(ACE, HEARTS);
-    Card c2(KING, SPADES);
-    //c3 and c4 may not work because the card rank is < 9
-    Card c3(TWO, SPADES);
-    Card c4(FIVE, DIAMONDS);
-    player->add_card(c1);
-    player->add_card(c2);
-    player->add_card(c3);
-    player->add_card(c4);
 
-    delete player;
-}
 TEST(test_trump) {
     Player* player = Player_factory("Alex", "Simple");
     Card upcard(JACK, HEARTS);
@@ -59,12 +46,109 @@ TEST(test_trump) {
     }
     delete player;
 }
-TEST(test_add_and_discard) {
-    Player* player = Player_factory("Toby", "Simple");
-    Card upcard(KING, HEARTS);
-    player->add_and_discard(upcard);
+// TEST(test_add_and_discard) {
+//     Player* player = Player_factory("Toby", "Simple");
+//     Card upcard(KING, HEARTS);
+//     player->add_and_discard(upcard);
 
-    delete player;
+//     delete player;
+// }
+
+TEST(test_simple_player_play_card) {
+  // Bob's hand
+  Player * bob = Player_factory("Bob", "Simple");
+  bob->add_card(Card(NINE, SPADES));
+  bob->add_card(Card(TEN, SPADES));
+  bob->add_card(Card(QUEEN, SPADES));
+  bob->add_card(Card(KING, SPADES));
+  bob->add_card(Card(ACE, SPADES));
+
+  // Bob plays a card
+  Card nine_diamonds(NINE, DIAMONDS);
+  Card card_played = bob->play_card(
+    nine_diamonds,  // Nine of Diamonds is led
+    HEARTS    // Trump suit
+  ); 
+
+  // Verify the card Bob played
+  ASSERT_EQUAL(card_played, Card(NINE, SPADES));
+  delete bob;
 }
+
+
+TEST(test_player_insertion) {
+  // Create a Human player
+  Player * human = Player_factory("NotRobot", "Human");
+
+  // Print the player using the stream insertion operator
+  ostringstream oss1;
+  oss1 << * human;
+
+  // Verify that the output is the player's name
+  ASSERT_EQUAL(oss1.str(), "NotRobot");
+
+  // Create a Simple player
+  Player * alice = Player_factory("Alice", "Simple");
+
+  // Print the player using the stream insertion operator
+  ostringstream oss2;
+  oss2 << *alice;
+  ASSERT_EQUAL(oss2.str(), "Alice");
+
+  // Clean up players that were created using Player_factory()
+  delete human;
+  delete alice;
+}
+
+TEST(test_simple_player_make_trump) {
+  // Bob's hand
+  Player * bob = Player_factory("Bob", "Simple");
+  bob->add_card(Card(NINE, SPADES));
+  bob->add_card(Card(TEN, SPADES));
+  bob->add_card(Card(QUEEN, SPADES));
+  bob->add_card(Card(KING, SPADES));
+  bob->add_card(Card(ACE, SPADES));
+
+  // Bob makes tump
+  Card nine_spades(NINE, SPADES);
+  Suit trump;
+  bool orderup = bob->make_trump(
+    nine_spades,    // Upcard
+    true,           // Bob is also the dealer
+    1,              // First round
+    trump           // Suit ordered up (if any)
+  );
+
+  // Verify Bob's order up and trump suit
+  ASSERT_TRUE(orderup);
+  ASSERT_EQUAL(trump, SPADES);
+
+  delete bob;
+}
+
+TEST(test_simple_player_lead_card) {
+  // Bob's hand
+  Player * bob = Player_factory("Bob", "Simple");
+  bob->add_card(Card(NINE, SPADES));
+  bob->add_card(Card(TEN, SPADES));
+  bob->add_card(Card(QUEEN, SPADES));
+  bob->add_card(Card(KING, SPADES));
+  bob->add_card(Card(ACE, SPADES));
+
+  // Bob adds a card to his hand and discards one card
+  bob->add_and_discard(
+    Card(NINE, HEARTS) // upcard
+  );
+
+  // Bob leads
+  Card card_led = bob->lead_card(HEARTS);
+
+  // Verify the card Bob selected to lead
+  Card ace_spades(ACE, SPADES);
+  ASSERT_EQUAL(card_led, ace_spades); //check led card
+
+  delete bob;
+}
+
 
 TEST_MAIN()
