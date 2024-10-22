@@ -180,7 +180,7 @@ bool Card::is_left_bower(Suit trump) const {
 }
 
 bool Card::is_trump(Suit trump) const {
-  return suit == trump;
+  return suit == trump || is_left_bower(trump); //double check left_bower
 }
 //changed
 ostream & operator<<(ostream &os, const Card &card) {
@@ -286,7 +286,17 @@ Suit Suit_next(Suit suit) {
 
 bool Card_less(const Card &a, const Card &b, Suit trump) {
 
-  if (a.get_suit() == trump && b.get_suit() == trump) {
+  if (a.is_right_bower(trump)) {
+    return false;
+  } else if (b.is_right_bower(trump)) {
+    cout << "hello" << endl;
+
+    return true;
+  } else if (a.is_left_bower(trump)) {
+    return false;
+  } else if (b.is_right_bower(trump)) {
+    return true;
+  } else if (a.get_suit() == trump && b.get_suit() == trump) {
     return a < b;
   } else if (b.get_suit() == trump) {
     return true;

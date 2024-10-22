@@ -42,7 +42,7 @@ class SimplePlayer : public Player {
 
             int face_or_ace_of_trump = 0;
             for (size_t i = 0; i < hand.size(); ++i) {
-                if (hand[i].is_face_or_ace()) {
+                if ((hand[i].is_face_or_ace() && hand[i].get_suit() == trump_suit) || (hand[i].is_left_bower(trump_suit))) { //double check
                   face_or_ace_of_trump++;
                 }
             }
@@ -54,7 +54,10 @@ class SimplePlayer : public Player {
           else if (round == 2) {
 
             if (is_dealer) {
-              order_up_suit = trump_suit;
+              
+              cout << "DEALER ORDERS UP" << endl;
+
+              order_up_suit = same_color_suit;
               return true;
             } else {
               for (size_t i = 0; i < hand.size(); ++i) {
@@ -71,7 +74,7 @@ class SimplePlayer : public Player {
 
     void add_and_discard(const Card & upcard) override {
 
-      cout << hand.size() << endl;
+      // cout << hand.size() << endl;
       // assert(hand.size() > 0);
       hand.push_back(upcard);
       hand.erase(hand.begin()); //! double check
@@ -82,16 +85,37 @@ class SimplePlayer : public Player {
 
       assert(hand.size() > 0);
 
-      Card leadCard = hand[0];
+      Card leadCard;
 
       int leadCardidx = 0;
 
+      bool has_non_trump = false;
+
       for (size_t i = 0; i < hand.size(); ++i) {
+
         if (!hand[i].is_trump(trump)) {
-          if (hand[i] > leadCard) {
+
+          has_non_trump = true;
+
+          if (Card_less(leadCard, hand[i], trump)) {
             leadCard = hand[i];
             leadCardidx = i;
+          // cout << leadCard << endl;
+
           }
+        }
+      }
+
+      if (!has_non_trump) {
+        for (size_t i = 0; i < hand.size(); ++i) {
+
+            if (Card_less(leadCard, hand[i], trump)) {
+              leadCard = hand[i];
+              leadCardidx = i;
+            // cout << leadCard << endl;
+
+            }
+          
         }
       }
 
@@ -112,12 +136,21 @@ class SimplePlayer : public Player {
         if (Card_less(hand[i], cardPlayed, led_card, trump)) {
           cardPlayed = hand[i];
           cardPlayedIdx = i;
+          cout << cardPlayed << endl;
         }
       }
 
+      // cout << lead_suit << endl;
+
+      // *
+      // cout << endl;
+      // print_hand();
+      // cout << endl;
+
       for (size_t i = 0; i < hand.size(); ++i) {
         if (hand[i].get_suit() == lead_suit) {
-          if (hand[i] > cardPlayed) {
+
+          if (Card_less(cardPlayed, hand[i], led_card, trump)) {
             cardPlayed = hand[i];
             cardPlayedIdx = i;
           }
@@ -125,6 +158,7 @@ class SimplePlayer : public Player {
       }
 
       hand.erase(hand.begin() + cardPlayedIdx);
+
 
       return cardPlayed;
       
