@@ -170,6 +170,7 @@ bool Card::is_left_bower(Suit trump) const {
       return true;
     }
     else if (trump == 2 && get_suit() == 0) {
+
       return true;
     }
     else if (trump == 3 && get_suit() == 1) {
@@ -289,12 +290,12 @@ bool Card_less(const Card &a, const Card &b, Suit trump) {
   if (a.is_right_bower(trump)) {
     return false;
   } else if (b.is_right_bower(trump)) {
-    cout << "hello" << endl;
-
     return true;
   } else if (a.is_left_bower(trump)) {
+    // cout << "A is LEFT BOWER" << endl;
     return false;
-  } else if (b.is_right_bower(trump)) {
+  } else if (b.is_left_bower(trump)) {
+    // cout << "B is LEFT BOWER" << endl;
     return true;
   } else if (a.get_suit() == trump && b.get_suit() == trump) {
     return a < b;
@@ -310,10 +311,31 @@ bool Card_less(const Card &a, const Card &b, const Card &led_card, Suit trump) {
 
   Suit led_suit = led_card.get_suit();
 
-  if (a.get_suit() != led_suit && b.get_suit() != led_suit) {
+  if (led_card.is_left_bower(trump)) {
+    led_suit = Suit_next(led_card.get_suit());
+  }
+
+
+   if (a.is_right_bower(trump)) {
+    return false;
+  } else if (b.is_right_bower(trump)) {
+    return true;
+  } else if (a.is_left_bower(trump)) {
+    return false;
+  } else if (b.is_left_bower(trump)) {
+    return true;
+  } if (a.get_suit() != led_suit && b.get_suit() != led_suit) {
     return Card_less(a, b, trump);
   } else if (a.get_suit() == led_suit && b.get_suit() == led_suit) {
     return Card_less(a, b, trump);
+  } 
+  else if (a.get_suit() == trump && b.get_suit() == trump) {
+    return Card_less(a, b, trump);
+  } 
+  else if (b.get_suit() == trump) {
+    return true;
+  } else if (a.get_suit() == trump) {
+    return false;
   } else if (b.get_suit() == led_suit) {
     return true;
   } else if (a.get_suit() == led_suit) {

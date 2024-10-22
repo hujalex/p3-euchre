@@ -29,21 +29,14 @@ class Game {
 
         void play() {
 
-            cout << "Play!" << endl;
-
-            cout << winning_points << endl;
-
             //while < points
 
             int hand_num = 0;
-            cout << team_even_points << endl;
 
-            this->winning_points = 2; //!Only for testing
-            cout << winning_points << endl;
-            cout << team_odd_points << endl;
+            // this->winning_points = 3; //!Only for testing
 
 
-            while (team_even_points <= winning_points && team_odd_points <= winning_points) {
+            while (team_even_points < winning_points && team_odd_points < winning_points) {
 
                 cout << "Hand " << hand_num << endl;
 
@@ -51,20 +44,22 @@ class Game {
 
                 this->deal();
 
-                
-            players[0]->print_hand();
-            players[1]->print_hand();
-            players[2]->print_hand();
-            players[3]->print_hand();
+
 
             //? Deal() function is correct
                             
 
                 this->make_trump();
 
+                                
+            // players[0]->print_hand();
+            // players[1]->print_hand();
+            // players[2]->print_hand();
+            // players[3]->print_hand();
+
                 cout << endl;
-                cout << trump_suit << endl;
-                cout << ordered_up_idx << endl;
+                // cout << trump_suit << endl;
+                // cout << ordered_up_idx << endl;
 
                 
                 this->play_hand();
@@ -74,6 +69,18 @@ class Game {
                 this->dealer_idx = (this->dealer_idx + 1) % 4;
                 hand_num++;
 
+            }
+
+
+            string p0_name = players[0]->get_name();
+            string p1_name = players[1]->get_name();
+            string p2_name = players[2]->get_name();
+            string p3_name = players[3]->get_name();
+
+            if (team_even_points > team_odd_points) {
+                cout << p0_name << " and " << p2_name << " win!" << endl;
+            } else {
+                cout << p1_name << " and " << p3_name << " win! " << endl;
             }
 
 
@@ -174,14 +181,15 @@ class Game {
                     this->trump_suit = order_up_suit;
                     this->ordered_up_idx = player_idx;
                     cout << players[ordered_up_idx]->get_name() << " orders up " << order_up_suit << endl;
-                    cout << "Round One Make Trump" << endl;
+                    // cout << "Round One Make Trump" << endl;
 
-                    if (is_dealer) {
-                        players[dealer_idx]->add_and_discard(upcard);
-                    }
+              
+                    players[dealer_idx]->add_and_discard(upcard);
                     
-                } else {
-                    cout << players[player_idx]->get_name() << " passes 1" << endl;
+                    
+                } 
+                else {
+                    cout << players[player_idx]->get_name() << " passes" << endl;
                 }
 
                 ++i;
@@ -200,7 +208,7 @@ class Game {
                 if (player_idx == this->dealer_idx) {
                     is_dealer = true;
 
-                    cout << players[player_idx]->get_name() << endl;
+                    // cout << players[player_idx]->get_name() << endl;
                 }
 
                 if (players[player_idx]->make_trump(upcard, is_dealer, 2, order_up_suit)) {
@@ -208,7 +216,7 @@ class Game {
                     this->trump_suit = order_up_suit;
                     this->ordered_up_idx = player_idx;
                     cout << players[ordered_up_idx]->get_name() << " orders up " << order_up_suit << endl;
-                    cout << "Round Two Make Trump" << endl;
+                    // cout << "Round Two Make Trump" << endl;
 
                 } 
                 else {
@@ -241,6 +249,7 @@ class Game {
                     Card playedCard = players.at(idx)->play_card(ledCard, this->trump_suit);
                     cout << playedCard << " played by " << players[idx]->get_name() << endl;
 
+                    //finding whoever wins the trick
                     if (Card_less(max, playedCard, ledCard, this->trump_suit)) {
                         // cout << ledCard << endl;
                         // cout << playedCard << endl;
@@ -260,16 +269,14 @@ class Game {
                 leader_idx = max_idx;
 
                 if (max_idx % 2 == 0) {
-                    cout << "++team_trick_evens;" << endl;
+                    // cout << "++team_trick_evens;" << endl;
                     ++team_trick_evens;
                 } else if (max_idx % 2 == 1) {
-                    cout << "++team_trick_odds;" << endl;
+                    // cout << "++team_trick_odds;" << endl;
                     ++team_trick_odds;
                 }
 
                 cout << endl;
-                cout << i << endl;
-
             }
 
 
@@ -278,44 +285,55 @@ class Game {
             string p2_name = players[2]->get_name();
             string p3_name = players[3]->get_name();
 
-            cout << "ORDERED OUT " << players[ordered_up_idx]->get_name() << endl;
-            cout << team_trick_evens << endl;
-            cout << team_trick_odds << endl;
+            // cout << "ORDERED OUT " << players[ordered_up_idx]->get_name() << endl;
+            // cout << team_trick_evens << endl;
+            // cout << team_trick_odds << endl;
             if (ordered_up_idx % 2 == 0) {
-                cout << "Evens Ordered" << endl;
-                cout << p0_name << " and " << p2_name << " win the hand" << endl;
+                // cout << "Evens Ordered" << endl;
                 if (team_trick_evens == 5) {
                     cout << "march!" << endl;
                     team_even_points += 2;
+                    cout << p0_name << " and " << p2_name << " win the hand" << endl;
                 } else if (team_trick_odds >= 3) {
                     cout << "euchred!" << endl;
                     team_odd_points += 2;
+                    cout << p1_name << " and " << p3_name << " win the hand" << endl;
                 } else if (team_trick_evens == 3 || team_trick_evens == 4) {
                     team_even_points++;
+                    cout << p0_name << " and " << p2_name << " win the hand" << endl;
+
                 }
             }
             else if (ordered_up_idx % 2 == 1) {
-                cout << "Odds Ordered" << endl;
+                // cout << "Odds Ordered" << endl;
                 if (team_trick_odds == 5) {
                     cout << "march!" << endl;
                     team_odd_points += 2;
+                    cout << p1_name << " and " << p3_name << " win the hand" << endl;
                 } else if (team_trick_evens >= 3) {
                     cout << "euchred!" << endl;
-                    cout << "Hello" << endl;
                     team_even_points += 2;
+                    cout << p0_name << " and " << p2_name << " win the hand" << endl;
+
                 } else if (team_trick_odds == 3 || team_trick_odds == 4) {
                     team_odd_points++;
+                    cout << p1_name << " and " << p3_name << " win the hand" << endl;
                 }
             }
             cout << p0_name << " and " << p2_name << " have " << team_even_points << " points" << endl;
             cout << p1_name << " and " << p3_name << " have " << team_odd_points << " points" << endl;
-            cout << endl;
 
         };
 
 };
 
 int main(int argc, char **argv) {
+
+    for (int i = 0; i < argc; ++i) {
+        cout << argv[i] << " ";
+    }
+    cout << endl;
+
 
     ifstream fin;
     fin.open(argv[1]);
@@ -338,7 +356,8 @@ int main(int argc, char **argv) {
     string player_3_type = argv[9];
     string player_4_name = argv[10];
     string player_4_type = argv[11];
-    
+
+
     Game game(pack_from_ifstream, shuffling, points, 
     player_1_name, player_1_type, 
     player_2_name, player_2_type, 
@@ -347,6 +366,20 @@ int main(int argc, char **argv) {
 
 
     game.play(); 
+
+    // Card one(NINE, DIAMONDS);
+    // Card two(TEN, SPADES);
+    // Card led(JACK, HEARTS);
+
+    // cout << "one " << one << endl;
+    // cout << "two " << two << endl;
+
+    // if (Card_less(one, two, led, DIAMONDS)) {
+    //     cout << "TRUE" << endl;
+    // } else {
+    //     cout << "FALSE" << endl;
+    // }
+    // cout << (Card_less(one, two, led, DIAMONDS)) << endl;
 
 }
 
