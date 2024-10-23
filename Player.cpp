@@ -89,7 +89,7 @@ class SimplePlayer : public Player {
         }
       }
       hand.erase(hand.begin() + lowest_idx); //! double check needs to remove lowest card
-      hand.push_back(upcard);
+      add_card(upcard);
 
 
     }
@@ -241,8 +241,8 @@ class SimplePlayer : public Player {
 
     void print_hand() const override{
       for (size_t i = 0; i < hand.size(); ++i) {
-        cout << "Human Player" << name << "'s hand: "
-        << "[" << i << "]" << hand[i] << "\n";
+        cout << "Human player " << name << "'s hand: "
+        << "[" << i << "] " << hand[i] << "\n";
       }
     }
 
@@ -309,9 +309,16 @@ class HumanPlayer : public Player {
       print_hand();
       cout << "Discard upcard: [-1]\n";
       cout << "Human player " << name << ", please select a card to discard:\n";
-
-      //TODO 
       
+      string response;
+      cin >> response;
+
+      int card_to_discard = stoi(response);
+
+      if (card_to_discard != -1) {
+          hand.erase(hand.begin() + card_to_discard);
+          add_card(upcard);
+      } 
       
     }
 
@@ -324,9 +331,12 @@ class HumanPlayer : public Player {
       cout << "Human player " << name << ", please select a card:\n";
       string card_str;
       cin >> card_str;
-      int card = stoi(card_str);
+      int card_idx = stoi(card_str);
 
-      return hand[card];
+      Card leadCard = hand[card_idx];
+      hand.erase(hand.begin() + card_idx);
+
+      return leadCard;
 
     };
 
@@ -339,17 +349,19 @@ class HumanPlayer : public Player {
 
       string card_str;
       cin >> card_str;
-      int card = stoi(card_str);
+      int card_idx = stoi(card_str);
+      Card playedCard = hand[card_idx];
 
-      return hand[card];
+      hand.erase(hand.begin() + card_idx);
 
+      return playedCard;
 
     };
 
     void print_hand() const {
       for (size_t i = 0; i < hand.size(); ++i) {
-        cout << "Human Player" << name << "'s hand: "
-        << "[" << i << "]" << hand[i] << "\n";
+        cout << "Human player " << name << "'s hand: "
+        << "[" << i << "] " << hand[i] << "\n";
       }
     }
 

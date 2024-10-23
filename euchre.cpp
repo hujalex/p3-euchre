@@ -275,10 +275,8 @@ class Game {
                     // cout << "++team_trick_odds;" << endl;
                     ++team_trick_odds;
                 }
-
                 cout << endl;
             }
-
 
             string p0_name = players[0]->get_name();
             string p1_name = players[1]->get_name();
