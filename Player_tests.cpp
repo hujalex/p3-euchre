@@ -31,6 +31,24 @@ TEST(test_add_card) {
 
     delete player;
 }
+TEST(test_add_discard)
+{
+    Player* bob = Player_factory("Bob", "Simple");
+    bob->add_card(Card(NINE, SPADES));
+    bob->add_card(Card(TEN, SPADES));
+    bob->add_card(Card(QUEEN, SPADES));
+    bob->add_card(Card(KING, SPADES));
+    bob->add_card(Card(ACE, SPADES));
+
+    
+    bob->add_and_discard(Card(JACK, SPADES));
+    bob->add_and_discard(Card(JACK, DIAMONDS));
+    bob->add_and_discard(Card(JACK, HEARTS));
+    bob->add_and_discard(Card(JACK, CLUBS));
+
+
+
+}
 TEST(test_trump) {
     Player* player = Player_factory("Alex", "Simple");
     Card upcard(JACK, HEARTS);
