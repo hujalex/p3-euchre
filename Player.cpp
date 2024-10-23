@@ -163,37 +163,10 @@ class SimplePlayer : public Player {
           cardPlayedIdx = i;
         }
 
-        // if (cardPlayed.is_right_bower(trump)) {
-        //     cardPlayed = hand[i];
-        //     cardPlayedIdx = i;
-        // } else if (cardPlayed.is_left_bower(trump) && !hand[i].is_right_bower(trump)) {
-        //     cardPlayed = hand[i];
-        //     cardPlayedIdx = i;
-        // } else if (hand[i].is_right_bower(trump)) {
-        //   continue;
-        // } else if (hand[i].is_left_bower(trump) && cardPlayed.is_right_bower(trump)) {
-        //     cardPlayed = hand[i];
-        //     cardPlayedIdx = i;
-        // }
-        // else if (hand[i].is_left_bower(trump) && !cardPlayed.is_right_bower(trump)) {
-        //   continue;
-        // }
-        // else if (hand[i] < cardPlayed ) {
-        //   // cout << hand[i] << endl
-        //   cardPlayed = hand[i];
-        //   cardPlayedIdx = i;
-        // }
+
       }
 
-      // cout << lead_suit << endl;
-
-      // *
-      // cout << endl;
-      // print_hand();
-      // cout << endl;
-
       for (size_t i = 0; i < hand.size(); ++i) {
-        // cout << hand[i].get_suit() << endl;
 
 
         if (hand[i].is_left_bower(trump) && lead_suit != Suit_next(hand[i].get_suit())) {
@@ -219,16 +192,7 @@ class SimplePlayer : public Player {
             cardPlayedIdx = i;
           }
 
-          // if (cardPlayed.get_suit() != lead_suit) {
-          //   cardPlayed = hand[i];
-          //   cardPlayedIdx = i;
-          // }
 
-          // if (cardPlayed < hand[i]) {
-          //   cardPlayed = hand[i];
-          //   cardPlayedIdx = i; //does not consider trump;
-          // }
-          // cout << "Has Lead Suit" << endl;
         }
       }
 
@@ -239,17 +203,19 @@ class SimplePlayer : public Player {
       
     };
 
-    void print_hand() const override{
-      for (size_t i = 0; i < hand.size(); ++i) {
-        cout << "Human player " << name << "'s hand: "
-        << "[" << i << "] " << hand[i] << "\n";
-      }
-    }
+
 
 
   private:
     string name;
     vector<Card> hand;
+
+    void print_hand() const {
+      for (size_t i = 0; i < hand.size(); ++i) {
+        cout << "Human player " << name << "'s hand: "
+        << "[" << i << "] " << hand[i] << "\n";
+      }
+    }
 
 };
 
@@ -261,11 +227,14 @@ class HumanPlayer : public Player {
     HumanPlayer(string name)
     : name(name) {};
 
-    const string & get_name() const override {
+    const string & get_name() const {
       return name;
     }
 
     void add_card(const Card&c) override {
+
+      sort(hand.begin(), hand.end());
+
       if (hand.size() < MAX_HAND_SIZE) {
         hand.push_back(c);
       }
@@ -273,6 +242,7 @@ class HumanPlayer : public Player {
 
     bool make_trump(const Card & upcard, bool is_dealer,
           int round, Suit &order_up_suit) const override {
+
           
           assert(round == 1 || round == 2);
 
@@ -304,7 +274,7 @@ class HumanPlayer : public Player {
 
     void add_and_discard(const Card & upcard) override {
 
-      sort(hand.begin(), hand.end());
+      // sort(hand.begin(), hand.end());
 
       print_hand();
       cout << "Discard upcard: [-1]\n";
@@ -325,7 +295,7 @@ class HumanPlayer : public Player {
     Card lead_card(Suit trump) override {
 
 
-      sort(hand.begin(), hand.end());
+      // sort(hand.begin(), hand.end());
 
       print_hand();
       cout << "Human player " << name << ", please select a card:\n";
@@ -342,7 +312,7 @@ class HumanPlayer : public Player {
 
     Card play_card(const Card &led_card, Suit trump) override {
 
-      sort(hand.begin(), hand.end());
+      // sort(hand.begin(), hand.end());
 
       print_hand();
       cout << "Human player " << name << ", please select a card:\n";
@@ -358,6 +328,12 @@ class HumanPlayer : public Player {
 
     };
 
+
+  private:
+    vector<Card> hand;
+    string name;
+
+
     void print_hand() const {
       for (size_t i = 0; i < hand.size(); ++i) {
         cout << "Human player " << name << "'s hand: "
@@ -365,9 +341,6 @@ class HumanPlayer : public Player {
       }
     }
 
-  private:
-    vector<Card> hand;
-    string name;
 
 
 };
@@ -392,14 +365,3 @@ Player * Player_factory(const std::string &name,
   return nullptr;
 }
 
-// int main() {
-//   Player* player = Player_factory("Toby", "Simple");
-
-
-//     Card upcard(KING, HEARTS);
-
-    
-//     player->add_and_discard(upcard);
-
-//     delete player;
-// }
