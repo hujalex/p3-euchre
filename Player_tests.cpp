@@ -17,7 +17,20 @@ TEST(test_empty_name)
     ASSERT_EQUAL(empty->get_name(), "");
     delete empty;
 }
+TEST(test_add_card) {
+    Player* player = Player_factory("Bob", "Simple");
+    Card c1(ACE, HEARTS);
+    Card c2(KING, SPADES);
+    //c3 and c4 may not work because the card rank is < 9
+    Card c3(TWO, SPADES);
+    Card c4(FIVE, DIAMONDS);
+    player->add_card(c1);
+    player->add_card(c2);
+    player->add_card(c3);
+    player->add_card(c4);
 
+    delete player;
+}
 TEST(test_trump) {
     Player* player = Player_factory("Alex", "Simple");
     Card upcard(JACK, HEARTS);
@@ -46,35 +59,6 @@ TEST(test_trump) {
     }
     delete player;
 }
-// TEST(test_add_and_discard) {
-//     Player* player = Player_factory("Toby", "Simple");
-//     Card upcard(KING, HEARTS);
-//     player->add_and_discard(upcard);
-
-//     delete player;
-// }
-
-TEST(test_simple_player_play_card) {
-  // Bob's hand
-  Player * bob = Player_factory("Bob", "Simple");
-  bob->add_card(Card(NINE, SPADES));
-  bob->add_card(Card(TEN, SPADES));
-  bob->add_card(Card(QUEEN, SPADES));
-  bob->add_card(Card(KING, SPADES));
-  bob->add_card(Card(ACE, SPADES));
-
-  // Bob plays a card
-  Card nine_diamonds(NINE, DIAMONDS);
-  Card card_played = bob->play_card(
-    nine_diamonds,  // Nine of Diamonds is led
-    HEARTS    // Trump suit
-  ); 
-
-  // Verify the card Bob played
-  ASSERT_EQUAL(card_played, Card(NINE, SPADES));
-  delete bob;
-}
-
 
 TEST(test_player_insertion) {
   // Create a Human player
@@ -100,6 +84,13 @@ TEST(test_player_insertion) {
   delete alice;
 }
 
+TEST(test_player_get_name2) {
+  // Create a player and verify that get_name() returns the player's name
+  Player * alice = Player_factory("Alice", "Simple");
+  ASSERT_EQUAL(alice->get_name(), "Alice");
+  delete alice;
+}
+
 TEST(test_simple_player_make_trump) {
   // Bob's hand
   Player * bob = Player_factory("Bob", "Simple");
@@ -109,7 +100,7 @@ TEST(test_simple_player_make_trump) {
   bob->add_card(Card(KING, SPADES));
   bob->add_card(Card(ACE, SPADES));
 
-  // Bob makes tump
+  // Bob makes trump
   Card nine_spades(NINE, SPADES);
   Suit trump;
   bool orderup = bob->make_trump(
@@ -150,5 +141,226 @@ TEST(test_simple_player_lead_card) {
   delete bob;
 }
 
+TEST(test_simple_player_play_card) {
+  // Bob's hand
+  Player * bob = Player_factory("Bob", "Simple");
+  bob->add_card(Card(NINE, SPADES));
+  bob->add_card(Card(TEN, SPADES));
+  bob->add_card(Card(QUEEN, SPADES));
+  bob->add_card(Card(KING, SPADES));
+  bob->add_card(Card(ACE, SPADES));
+
+  // Bob plays a card
+  Card nine_diamonds(NINE, DIAMONDS);
+  Card card_played = bob->play_card(
+    nine_diamonds,  // Nine of Diamonds is led
+    HEARTS    // Trump suit
+  ); 
+
+  // Verify the card Bob played
+  ASSERT_EQUAL(card_played, Card(NINE, SPADES));
+  delete bob;
+}
+//ACTUAL TEST CASES
+
+TEST(Human_name) { 
+    Player* player = Player_factory("Toby", "Human");
+    ASSERT_NOT_EQUAL(player->get_name(), "Alex");
+    ASSERT_EQUAL(player->get_name(), "Toby");
+    delete player;
+}
+  //EFFECTS If Player wishes to order up a trump suit then return true and
+  //  change order_up_suit to desired suit.  If Player wishes to pass, then do
+  //  not modify order_up_suit and return false.
+TEST(test_make_trump)
+{
+    Player* player = Player_factory("Bot", "Simple");
+    player->add_card(Card(NINE, HEARTS));
+    player->add_card(Card(TEN, HEARTS));
+    player->add_card(Card(ACE, SPADES));
+    player->add_card(Card(KING, SPADES));
+    player->add_card(Card(QUEEN, SPADES));
+    Card upcard(JACK, HEARTS);
+    Suit trump;
+    bool order_suit = player->make_trump(upcard, false, 1, trump);
+    ASSERT_NOT_EQUAL(HEARTS, trump);
+    ASSERT_FALSE(order_suit);
+    Card upcard2(JACK,SPADES);
+    bool order_suit2 = player->make_trump(upcard2, true, 1, trump);
+    ASSERT_EQUAL(trump, SPADES);
+    ASSERT_TRUE(order_suit2);
+    
+    delete player;
+}
+
+TEST(test_make_trump_r2)
+{
+    Player* player = Player_factory("Bot", "Simple");
+    player->add_card(Card(QUEEN, SPADES)); //first one to appear 
+    player->add_card(Card(JACK, DIAMONDS));
+    player->add_card(Card(NINE, HEARTS));
+    player->add_card(Card(NINE,CLUBS));
+    player->add_card(Card(TEN,SPADES));
+    Card upcard(TEN, CLUBS);
+    Suit trump;
+    bool order_suit = player->make_trump(upcard, false, 2, trump);
+    ASSERT_EQUAL(SPADES,trump);
+    ASSERT_TRUE(order_suit);
+
+    Card upcard2(KING, SPADES);
+    bool order_suit2 = player->make_trump(upcard2, true, 2, trump);
+    ASSERT_EQUAL(trump, CLUBS);
+    ASSERT_TRUE(order_suit2);
+
+    Card upcard3(NINE,SPADES);
+    bool order_suit3 = player->make_trump(upcard3, false, 2, trump);
+    ASSERT_FALSE(order_suit3);
+
+    delete player;
+}
+TEST(test_make_trump_r1_2)
+{
+    Player* player = Player_factory("Bot", "Simple");
+    player->add_card(Card(JACK, DIAMONDS)); //first
+    player->add_card(Card(QUEEN, SPADES)); 
+    player->add_card(Card(ACE, HEARTS));
+    player->add_card(Card(NINE,CLUBS));
+    player->add_card(Card(TEN,SPADES));
+    Card upcard(KING, HEARTS);
+    Suit trump;
+    bool order_suit = player->make_trump(upcard, true, 1, trump);
+    ASSERT_EQUAL(trump, HEARTS);
+    ASSERT_TRUE(order_suit);
+    delete player;
+}
+
+TEST(test_lead)
+{
+    Player * bob = Player_factory("Bob", "Simple");
+    bob->add_card(Card(NINE, HEARTS));
+    bob->add_card(Card(TEN, HEARTS));
+    bob->add_card(Card(QUEEN, HEARTS));
+    bob->add_card(Card(KING, HEARTS));
+    bob->add_card(Card(ACE, HEARTS));
+    Card c1(JACK,HEARTS);
+    bob->add_and_discard(c1);
+
+    Card card_led = bob->lead_card(HEARTS);
+    ASSERT_EQUAL(c1, card_led);
+    delete bob;
+}
+TEST(test_lead2)
+{
+    Player * bob = Player_factory("Bob", "Simple");
+    bob->add_card(Card(ACE, SPADES));
+    bob->add_card(Card(ACE, CLUBS));
+    bob->add_card(Card(ACE, HEARTS));
+    bob->add_card(Card(ACE, DIAMONDS));
+    bob->add_card(Card(KING, HEARTS));
+    Card c1(JACK,CLUBS);
+    bob->add_and_discard(c1);
+
+    Card card_led = bob->lead_card(CLUBS);
+    ASSERT_EQUAL(Card(ACE, DIAMONDS), card_led);
+    delete bob;
+}
+TEST(test_lead3)
+{
+    Player * bob = Player_factory("Bob", "Simple");
+    bob->add_card(Card(JACK, SPADES));
+    bob->add_card(Card(KING, CLUBS));
+    bob->add_card(Card(JACK, HEARTS));
+    bob->add_card(Card(JACK, DIAMONDS));
+    bob->add_card(Card(KING, HEARTS));
+    Card c1(JACK,CLUBS);
+    bob->add_and_discard(c1);
+
+    Card card_led = bob->lead_card(CLUBS);
+    ASSERT_EQUAL(Card(KING, HEARTS), card_led);
+    delete bob;
+}
+TEST(test_lead4)
+{
+    Player * bob = Player_factory("Bob", "Simple");
+    bob->add_card(Card(TEN, HEARTS));
+    bob->add_card(Card(JACK, HEARTS));
+    bob->add_card(Card(QUEEN, HEARTS));
+    bob->add_card(Card(KING, HEARTS));
+    bob->add_card(Card(ACE, HEARTS));
+    Card c1(NINE,HEARTS);
+    bob->add_and_discard(c1);
+
+    Card card_led = bob->lead_card(HEARTS);
+    ASSERT_EQUAL(Card(JACK,HEARTS), card_led);
+    delete bob;
+}
+TEST(test_play_card) {
+  // Bob's hand
+  Player * bob = Player_factory("Bob", "Simple");
+  bob->add_card(Card(NINE, SPADES));
+  bob->add_card(Card(TEN, SPADES));
+  bob->add_card(Card(QUEEN, SPADES));
+  bob->add_card(Card(KING, SPADES));
+  bob->add_card(Card(ACE, SPADES));
+
+  // Bob plays a card
+  Card c(JACK,SPADES);
+  Card card_played = bob->play_card(
+    c,  
+    HEARTS    // Trump suit
+  ); 
+
+  // Verify the card Bob played
+  ASSERT_EQUAL(card_played, Card(ACE,SPADES));
+  delete bob;
+}
+TEST(test_play_card2) {
+  // Bob's hand
+  Player * bob = Player_factory("Bob", "Simple");
+  bob->add_card(Card(NINE, SPADES));
+  bob->add_card(Card(TEN, SPADES));
+  bob->add_card(Card(QUEEN, SPADES));
+  bob->add_card(Card(KING, SPADES));
+  bob->add_card(Card(ACE, SPADES));
+
+  // Bob plays a card
+  Card c(JACK,SPADES);
+  Card card_played = bob->play_card(
+    c,  
+    SPADES   // Trump suit
+  ); 
+
+  // Verify the card Bob played
+  ASSERT_EQUAL(card_played, Card(ACE,SPADES));
+  delete bob;
+}
+TEST(test_play_card3) {
+  // Bob's hand
+  Player * bob = Player_factory("Bob", "Simple");
+  bob->add_card(Card(NINE, SPADES));
+  bob->add_card(Card(TEN, CLUBS));
+  bob->add_card(Card(QUEEN, DIAMONDS));
+  bob->add_card(Card(KING, HEARTS));
+  bob->add_card(Card(ACE, SPADES));
+
+  // Bob plays a card
+  Card c(KING,DIAMONDS);
+  Card card_played = bob->play_card(
+    c,  
+    HEARTS    // Trump suit
+  ); 
+
+  // Verify the card Bob played
+  ASSERT_EQUAL(card_played, Card(QUEEN,DIAMONDS));
+  delete bob;
+}
+TEST(test_os)
+{
+    Player * bob = Player_factory("Bob", "Simple");
+    ostringstream os;
+    os << * bob;
+    ASSERT_NOT_EQUAL(os.str(), "Simple");
+    delete bob;
+}
 
 TEST_MAIN()

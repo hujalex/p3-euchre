@@ -42,7 +42,11 @@ class SimplePlayer : public Player {
 
             int face_or_ace_of_trump = 0;
             for (size_t i = 0; i < hand.size(); ++i) {
-                if ((hand[i].is_face_or_ace() && hand[i].get_suit() == trump_suit) || (hand[i].is_left_bower(trump_suit))) { //double check
+                if ((hand[i].is_face_or_ace() && hand[i].get_suit() == trump_suit)) { //double check
+                  face_or_ace_of_trump++;
+                }
+                if(hand[i].is_left_bower(trump_suit))
+                {
                   face_or_ace_of_trump++;
                 }
             }
@@ -61,7 +65,7 @@ class SimplePlayer : public Player {
               return true;
             } else {
               for (size_t i = 0; i < hand.size(); ++i) {
-                if (hand[i].get_suit() == same_color_suit) {
+                if (hand[i].is_face_or_ace() && hand[i].get_suit() == same_color_suit) {
                   order_up_suit = same_color_suit ;
                   return true;
                 }
@@ -79,7 +83,7 @@ class SimplePlayer : public Player {
       // cout << "Add and Discard" << endl;
       // cout << "Added card " << upcard << endl;
 
-      Card lowest = hand[0];
+      Card lowest = upcard; // Changed upcard from hand[0];
       int lowest_idx = 0;
 
       for (size_t i = 0; i < hand.size(); ++i) {
@@ -91,7 +95,6 @@ class SimplePlayer : public Player {
       hand.erase(hand.begin() + lowest_idx); //! double check needs to remove lowest card
       add_card(upcard);
 
-
     }
 
     Card lead_card(Suit trump) override {
@@ -100,7 +103,7 @@ class SimplePlayer : public Player {
 
       // print_hand();
 
-      Card leadCard;
+      Card leadCard = hand[0]; //switched from default initialization
 
       // cout << "initalized lead" << leadCard << endl;
 
@@ -125,7 +128,7 @@ class SimplePlayer : public Player {
           }
         }
       }
-
+      
       if (!has_non_trump) {
         for (size_t i = 0; i < hand.size(); ++i) {
 
@@ -289,6 +292,7 @@ class HumanPlayer : public Player {
           hand.erase(hand.begin() + card_to_discard);
           add_card(upcard);
       } 
+
       
     }
 
