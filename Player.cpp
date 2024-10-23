@@ -42,7 +42,7 @@ class SimplePlayer : public Player {
 
             int face_or_ace_of_trump = 0;
             for (size_t i = 0; i < hand.size(); ++i) {
-                if (hand[i].is_face_or_ace()) {
+                if ((hand[i].is_face_or_ace() && hand[i].get_suit() == trump_suit) || (hand[i].is_left_bower(trump_suit))) { //double check
                   face_or_ace_of_trump++;
                 }
             }
@@ -54,7 +54,10 @@ class SimplePlayer : public Player {
           else if (round == 2) {
 
             if (is_dealer) {
-              order_up_suit = trump_suit;
+              
+              cout << "DEALER ORDERS UP" << endl;
+
+              order_up_suit = same_color_suit;
               return true;
             } else {
               for (size_t i = 0; i < hand.size(); ++i) {
@@ -71,10 +74,23 @@ class SimplePlayer : public Player {
 
     void add_and_discard(const Card & upcard) override {
 
-      cout << hand.size() << endl;
+      // cout << hand.size() << endl;
       // assert(hand.size() > 0);
-      hand.push_back(upcard);
-      hand.erase(hand.begin()); //! double check
+      // cout << "Add and Discard" << endl;
+      // cout << "Added card " << upcard << endl;
+
+      Card lowest = hand[0];
+      int lowest_idx = 0;
+
+      for (size_t i = 0; i < hand.size(); ++i) {
+        if (Card_less(hand[i], lowest, upcard.get_suit())) {
+          lowest = hand[i];
+          lowest_idx = i;
+        }
+      }
+      hand.erase(hand.begin() + lowest_idx); //! double check needs to remove lowest card
+      add_card(upcard);
+
 
     }
 
@@ -82,28 +98,61 @@ class SimplePlayer : public Player {
 
       assert(hand.size() > 0);
 
-      Card leadCard = hand[0];
+      // print_hand();
+
+      Card leadCard;
+
+      // cout << "initalized lead" << leadCard << endl;
 
       int leadCardidx = 0;
 
+      bool has_non_trump = false;
+
       for (size_t i = 0; i < hand.size(); ++i) {
+
         if (!hand[i].is_trump(trump)) {
-          if (hand[i] > leadCard) {
+
+          has_non_trump = true; 
+
+          if (leadCard.is_trump(trump)) {
+            // cout << "TRUE" << endl;
+            leadCard = hand[i];
+            leadCardidx = i;
+          }
+          else if (Card_less(leadCard, hand[i], trump)) {
             leadCard = hand[i];
             leadCardidx = i;
           }
         }
       }
 
+      if (!has_non_trump) {
+        for (size_t i = 0; i < hand.size(); ++i) {
+
+            if (Card_less(leadCard, hand[i], trump)) {
+              leadCard = hand[i];
+              leadCardidx = i;
+            // cout << leadCard << endl;
+
+            }
+          
+        }
+      }
+
       hand.erase(hand.begin() + leadCardidx);
+
 
       return leadCard;
     }
 
     Card play_card(const Card &led_card, Suit trump) override {
+
       assert(hand.size() > 0);
 
       Suit lead_suit = led_card.get_suit();
+      if (led_card.is_left_bower(trump)) {
+        lead_suit = Suit_next(led_card.get_suit());
+      }
 
       Card cardPlayed = hand[0];
       int cardPlayedIdx = 0;
@@ -113,18 +162,78 @@ class SimplePlayer : public Player {
           cardPlayed = hand[i];
           cardPlayedIdx = i;
         }
+
+        // if (cardPlayed.is_right_bower(trump)) {
+        //     cardPlayed = hand[i];
+        //     cardPlayedIdx = i;
+        // } else if (cardPlayed.is_left_bower(trump) && !hand[i].is_right_bower(trump)) {
+        //     cardPlayed = hand[i];
+        //     cardPlayedIdx = i;
+        // } else if (hand[i].is_right_bower(trump)) {
+        //   continue;
+        // } else if (hand[i].is_left_bower(trump) && cardPlayed.is_right_bower(trump)) {
+        //     cardPlayed = hand[i];
+        //     cardPlayedIdx = i;
+        // }
+        // else if (hand[i].is_left_bower(trump) && !cardPlayed.is_right_bower(trump)) {
+        //   continue;
+        // }
+        // else if (hand[i] < cardPlayed ) {
+        //   // cout << hand[i] << endl
+        //   cardPlayed = hand[i];
+        //   cardPlayedIdx = i;
+        // }
       }
 
+      // cout << lead_suit << endl;
+
+      // *
+      // cout << endl;
+      // print_hand();
+      // cout << endl;
+
       for (size_t i = 0; i < hand.size(); ++i) {
-        if (hand[i].get_suit() == lead_suit) {
-          if (hand[i] > cardPlayed) {
+        // cout << hand[i].get_suit() << endl;
+
+
+        if (hand[i].is_left_bower(trump) && lead_suit != Suit_next(hand[i].get_suit())) {
+          continue;
+        }
+
+        if (hand[i].is_left_bower(trump) && lead_suit == Suit_next(hand[i].get_suit())) {
+          if (cardPlayed.get_suit() != lead_suit) {
             cardPlayed = hand[i];
             cardPlayedIdx = i;
           }
+
+          if (Card_less(cardPlayed, hand[i], led_card, trump)) {
+            cardPlayed = hand[i];
+            cardPlayedIdx = i; //does not consider trump;
+          }
+        }
+
+        if (hand[i].get_suit() == lead_suit) {
+
+          if (Card_less(cardPlayed, hand[i], led_card, trump)) {
+            cardPlayed = hand[i];
+            cardPlayedIdx = i;
+          }
+
+          // if (cardPlayed.get_suit() != lead_suit) {
+          //   cardPlayed = hand[i];
+          //   cardPlayedIdx = i;
+          // }
+
+          // if (cardPlayed < hand[i]) {
+          //   cardPlayed = hand[i];
+          //   cardPlayedIdx = i; //does not consider trump;
+          // }
+          // cout << "Has Lead Suit" << endl;
         }
       }
 
       hand.erase(hand.begin() + cardPlayedIdx);
+
 
       return cardPlayed;
       
@@ -132,8 +241,8 @@ class SimplePlayer : public Player {
 
     void print_hand() const override{
       for (size_t i = 0; i < hand.size(); ++i) {
-        cout << "Human Player" << name << "'s hand: "
-        << "[" << i << "]" << hand[i] << "\n";
+        cout << "Human player " << name << "'s hand: "
+        << "[" << i << "] " << hand[i] << "\n";
       }
     }
 
@@ -200,9 +309,16 @@ class HumanPlayer : public Player {
       print_hand();
       cout << "Discard upcard: [-1]\n";
       cout << "Human player " << name << ", please select a card to discard:\n";
-
-      //TODO 
       
+      string response;
+      cin >> response;
+
+      int card_to_discard = stoi(response);
+
+      if (card_to_discard != -1) {
+          hand.erase(hand.begin() + card_to_discard);
+          add_card(upcard);
+      } 
       
     }
 
@@ -215,9 +331,12 @@ class HumanPlayer : public Player {
       cout << "Human player " << name << ", please select a card:\n";
       string card_str;
       cin >> card_str;
-      int card = stoi(card_str);
+      int card_idx = stoi(card_str);
 
-      return hand[card];
+      Card leadCard = hand[card_idx];
+      hand.erase(hand.begin() + card_idx);
+
+      return leadCard;
 
     };
 
@@ -230,17 +349,19 @@ class HumanPlayer : public Player {
 
       string card_str;
       cin >> card_str;
-      int card = stoi(card_str);
+      int card_idx = stoi(card_str);
+      Card playedCard = hand[card_idx];
 
-      return hand[card];
+      hand.erase(hand.begin() + card_idx);
 
+      return playedCard;
 
     };
 
     void print_hand() const {
       for (size_t i = 0; i < hand.size(); ++i) {
-        cout << "Human Player" << name << "'s hand: "
-        << "[" << i << "]" << hand[i] << "\n";
+        cout << "Human player " << name << "'s hand: "
+        << "[" << i << "] " << hand[i] << "\n";
       }
     }
 
