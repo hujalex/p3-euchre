@@ -143,22 +143,16 @@ Suit Card::get_suit(Suit trump) const {
   if (is_left_bower(trump)) {
         return trump;
     }
-    return suit; // ! Double Check this
+    return suit; 
 }
 
 bool Card::is_face_or_ace() const {
   Rank r = get_rank();
-  if (r >= 9 && r <= 12) {
-    return true;
-  }
-  return false;
+  return (r >= 9 && r <= 12);
 }
 
 bool Card::is_right_bower(Suit trump) const {
-  if (get_rank() == 9 && get_suit() == trump) {
-    return true;
-  }
-  return false;
+  return (get_rank() == 9 && get_suit() == trump) ;
 }
 
 bool Card::is_left_bower(Suit trump) const {
