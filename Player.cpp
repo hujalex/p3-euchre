@@ -1,8 +1,8 @@
 #include "Player.hpp"
 #include <vector>
 #include <string>
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 // #include "Card.cpp"
 // #include "Pack.cpp"
 
@@ -42,7 +42,8 @@ class SimplePlayer : public Player {
 
             int face_or_ace_of_trump = 0;
             for (size_t i = 0; i < hand.size(); ++i) {
-                if ((hand[i].is_face_or_ace() && hand[i].get_suit() == trump_suit) || (hand[i].is_left_bower(trump_suit))) { //double check
+                if ((hand[i].is_face_or_ace() && hand[i].get_suit() == trump_suit) || 
+                (hand[i].is_left_bower(trump_suit) && Suit_next(hand[i].get_suit()) == trump_suit)) {
                   face_or_ace_of_trump++;
                 }
             }
@@ -54,9 +55,6 @@ class SimplePlayer : public Player {
           else if (round == 2) {
 
             if (is_dealer) {
-              
-              cout << "DEALER ORDERS UP" << endl;
-
               order_up_suit = same_color_suit;
               return true;
             } else {
@@ -74,10 +72,11 @@ class SimplePlayer : public Player {
 
     void add_and_discard(const Card & upcard) override {
 
-      // cout << hand.size() << endl;
-      // assert(hand.size() > 0);
-      // cout << "Add and Discard" << endl;
-      // cout << "Added card " << upcard << endl;
+      // assert(hand.size()>0);
+
+      // add_card(upcard);
+
+      hand.push_back(upcard); //! Double check
 
       Card lowest = hand[0];
       int lowest_idx = 0;
@@ -88,9 +87,7 @@ class SimplePlayer : public Player {
           lowest_idx = i;
         }
       }
-      hand.erase(hand.begin() + lowest_idx); //! double check needs to remove lowest card
-      add_card(upcard);
-
+      hand.erase(hand.begin() + lowest_idx); 
 
     }
 
@@ -98,11 +95,7 @@ class SimplePlayer : public Player {
 
       assert(hand.size() > 0);
 
-      // print_hand();
-
       Card leadCard;
-
-      // cout << "initalized lead" << leadCard << endl;
 
       int leadCardidx = 0;
 
@@ -133,52 +126,38 @@ class SimplePlayer : public Player {
               leadCard = hand[i];
               leadCardidx = i;
             // cout << leadCard << endl;
-
             }
-          
         }
       }
-
       hand.erase(hand.begin() + leadCardidx);
-
-
       return leadCard;
     }
 
     Card play_card(const Card &led_card, Suit trump) override {
 
       assert(hand.size() > 0);
-
       Suit lead_suit = led_card.get_suit();
       if (led_card.is_left_bower(trump)) {
         lead_suit = Suit_next(led_card.get_suit());
       }
-
       Card cardPlayed = hand[0];
       int cardPlayedIdx = 0;
-
       for (size_t i = 0; i < hand.size(); ++i) {
         if (Card_less(hand[i], cardPlayed, led_card, trump)) {
           cardPlayed = hand[i];
           cardPlayedIdx = i;
         }
-
-
       }
 
       for (size_t i = 0; i < hand.size(); ++i) {
-
-
         if (hand[i].is_left_bower(trump) && lead_suit != Suit_next(hand[i].get_suit())) {
           continue;
         }
-
         if (hand[i].is_left_bower(trump) && lead_suit == Suit_next(hand[i].get_suit())) {
           if (cardPlayed.get_suit() != lead_suit) {
             cardPlayed = hand[i];
             cardPlayedIdx = i;
           }
-
           if (Card_less(cardPlayed, hand[i], led_card, trump)) {
             cardPlayed = hand[i];
             cardPlayedIdx = i; //does not consider trump;
@@ -186,26 +165,17 @@ class SimplePlayer : public Player {
         }
 
         if (hand[i].get_suit() == lead_suit) {
-
           if (Card_less(cardPlayed, hand[i], led_card, trump)) {
             cardPlayed = hand[i];
             cardPlayedIdx = i;
           }
-
-
         }
       }
 
       hand.erase(hand.begin() + cardPlayedIdx);
-
-
       return cardPlayed;
       
     };
-
-
-
-
   private:
     string name;
     vector<Card> hand;
@@ -233,17 +203,17 @@ class HumanPlayer : public Player {
 
     void add_card(const Card&c) override {
 
-      sort(hand.begin(), hand.end());
 
       if (hand.size() < MAX_HAND_SIZE) {
         hand.push_back(c);
       }
+
+      sort(hand.begin(), hand.end());
+
     }
 
     bool make_trump(const Card & upcard, bool is_dealer,
           int round, Suit &order_up_suit) const override {
-
-          
           assert(round == 1 || round == 2);
 
           print_hand();
@@ -274,7 +244,7 @@ class HumanPlayer : public Player {
 
     void add_and_discard(const Card & upcard) override {
 
-      // sort(hand.begin(), hand.end());
+      sort(hand.begin(), hand.end());
 
       print_hand();
       cout << "Discard upcard: [-1]\n";
@@ -289,14 +259,17 @@ class HumanPlayer : public Player {
           hand.erase(hand.begin() + card_to_discard);
           add_card(upcard);
       } 
+
+      if (card_to_discard == -1) {
+        hand.push_back(upcard);
+        hand.pop_back();
+      }
       
     }
 
     Card lead_card(Suit trump) override {
 
-
-      // sort(hand.begin(), hand.end());
-
+      sort(hand.begin(), hand.end());
       print_hand();
       cout << "Human player " << name << ", please select a card:\n";
       string card_str;
@@ -312,7 +285,7 @@ class HumanPlayer : public Player {
 
     Card play_card(const Card &led_card, Suit trump) override {
 
-      // sort(hand.begin(), hand.end());
+      sort(hand.begin(), hand.end());
 
       print_hand();
       cout << "Human player " << name << ", please select a card:\n";
@@ -340,8 +313,6 @@ class HumanPlayer : public Player {
         << "[" << i << "] " << hand[i] << "\n";
       }
     }
-
-
 
 };
 

@@ -29,14 +29,9 @@ class Game {
 
         void play() {
 
-            //while < points
-
             int hand_num = 0;
 
-            // this->winning_points = 3; //!Only for testing
-
-
-            while (team_even_points < winning_points && team_odd_points < winning_points) {
+            while(team_even_points< winning_points && team_odd_points < winning_points) {
 
                 cout << "Hand " << hand_num << endl;
 
@@ -92,7 +87,7 @@ class Game {
                     num_cards = 2;
                 }
                 for (int j = 0; j < num_cards; ++j) {
-                        int idx = (this->dealer_idx + i + 1) % 4; // first batch left of dealer
+                        int idx = (this->dealer_idx + i + 1) % 4; 
                         (*players[idx]).add_card(this->pack.deal_one());
                 }
             }
@@ -107,7 +102,7 @@ class Game {
                     num_cards = 3;
                 }
                 for (int j = 0; j < num_cards; ++j) {
-                        int idx = (this->dealer_idx + i + 1) % 4; //second batch left of dealer;
+                        int idx = (this->dealer_idx + i + 1) % 4; 
                         (*players[idx]).add_card(this->pack.deal_one());
                 }
             
@@ -134,7 +129,9 @@ class Game {
                     round_one_trump = true;
                     this->trump_suit = order_up_suit;
                     this->ordered_up_idx = player_idx;
-                    cout << players[ordered_up_idx]->get_name() << " orders up " << order_up_suit << endl;
+                    cout<<players[ordered_up_idx]->get_name()<<" orders up "
+                    << order_up_suit<< endl;
+
                     players[dealer_idx]->add_and_discard(upcard);
                 } 
                 else {
@@ -150,11 +147,12 @@ class Game {
                 if (player_idx == this->dealer_idx) {
                     is_dealer = true;
                 }
-                if (players[player_idx]->make_trump(upcard, is_dealer, 2, order_up_suit)) {
+                if(players[player_idx]->make_trump(upcard, is_dealer, 2, order_up_suit)){
                     round_two_trump = true;
                     this->trump_suit = order_up_suit;
                     this->ordered_up_idx = player_idx;
-                    cout << players[ordered_up_idx]->get_name() << " orders up " << order_up_suit << endl;
+                    cout << players[ordered_up_idx]->get_name() << " orders up " 
+                    << order_up_suit << endl;
                 } 
                 else {
                     cout << players[player_idx]->get_name() << " passes" << endl;
@@ -223,8 +221,11 @@ class Game {
                     cout << p1_name << " and " << p3_name << " win the hand" << endl;
                 }
             }
-            cout << p0_name << " and " << p2_name << " have " << team_even_points << " points" << endl;
-            cout << p1_name << " and " << p3_name << " have " << team_odd_points << " points" << endl;
+            cout << p0_name << " and " << p2_name 
+            << " have " << team_even_points << " points" << endl;
+            
+            cout << p1_name << " and " << p3_name 
+            << " have " << team_odd_points << " points" << endl;
         };
 };
 
