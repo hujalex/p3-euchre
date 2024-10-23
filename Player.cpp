@@ -58,8 +58,7 @@ class SimplePlayer : public Player {
           else if (round == 2) {
 
             if (is_dealer) {
-              
-              cout << "DEALER ORDERS UP" << endl;
+            
 
               order_up_suit = same_color_suit;
               return true;
