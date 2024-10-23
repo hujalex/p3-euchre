@@ -135,10 +135,65 @@ TEST(Cardless) {
     Card c1 = Card(JACK, SPADES);
     Card c2 = Card(JACK, CLUBS);
     Card c3 = Card(ACE, SPADES);
+    Card c4 = Card(ACE, DIAMONDS);
+    Card c5 = Card(NINE, SPADES);
     ASSERT_TRUE(Card_less(c1, c2, CLUBS));
     ASSERT_TRUE(Card_less(c3, c1, CLUBS));
+    ASSERT_TRUE(Card_less(c3, c4, CLUBS));
+    ASSERT_TRUE(Card_less(c4, c5, SPADES));
+}
+TEST(Cardless2) {
+    Card c1 = Card(JACK, SPADES);
+    Card c2 = Card(JACK, CLUBS);
+    Card c3 = Card(ACE, SPADES);
+    Card c4 = Card(ACE, DIAMONDS);
+    Card c5 = Card(NINE, SPADES);
+    Card c6 = Card(TEN, HEARTS);
+    ASSERT_TRUE(Card_less(c4, c3, Card(QUEEN, SPADES), CLUBS));
+    ASSERT_TRUE(Card_less(c2, c1, Card(QUEEN, SPADES), SPADES));
+    ASSERT_TRUE(Card_less(c4, c5, c3, HEARTS));
+    ASSERT_TRUE(Card_less(c3, c6, c1, HEARTS));
+}
+TEST(test_card_suit_and_rank) {
+    Card two_spades = Card();
+    ASSERT_EQUAL(two_spades.get_rank(), TWO);
+    ASSERT_EQUAL(two_spades.get_suit(), SPADES);
+
+    Card three_spades = Card(THREE, SPADES);
+    ASSERT_EQUAL(three_spades.get_rank(), THREE);
+    ASSERT_EQUAL(three_spades.get_suit(), SPADES);
+    ASSERT_EQUAL(three_spades.get_suit(CLUBS), SPADES);
 }
 
+
+TEST(test_Suit_next) {
+    ASSERT_EQUAL(Suit_next(CLUBS), SPADES);
+}
+
+TEST(test_card_type) {
+    Card three_spades = Card(THREE, SPADES);
+    ASSERT_FALSE(three_spades.is_face_or_ace());
+    ASSERT_FALSE(three_spades.is_right_bower(CLUBS));
+    ASSERT_FALSE(three_spades.is_left_bower(CLUBS));
+    ASSERT_FALSE(three_spades.is_trump(CLUBS));
+}
+
+TEST(test_card_self_comparison) {
+    Card three_spades = Card(THREE, SPADES);
+    ASSERT_FALSE(three_spades < three_spades);
+    ASSERT_TRUE(three_spades <= three_spades);
+    ASSERT_FALSE(three_spades > three_spades);
+    ASSERT_TRUE(three_spades >= three_spades);
+    ASSERT_TRUE(three_spades == three_spades);
+    ASSERT_FALSE(three_spades != three_spades);
+}
+
+TEST(test_Card_less_self) {
+    Card three_spades = Card(THREE, SPADES);
+    ASSERT_FALSE(Card_less(three_spades, three_spades, CLUBS));
+    ASSERT_FALSE(Card_less(three_spades, three_spades, three_spades,
+                           CLUBS));
+}
 
 // Add more test cases here
 
