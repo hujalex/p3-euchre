@@ -21,7 +21,14 @@ TEST(test_card)
 TEST(test_card_trump)
 {
     Card c3(JACK, CLUBS);
+    
+    Card c4(JACK, SPADES);
     ASSERT_EQUAL(c3.get_suit(SPADES), SPADES);
+    ASSERT_EQUAL(c3.is_trump(CLUBS), true);
+    ASSERT_EQUAL(c4.is_trump(CLUBS), true);
+    ASSERT_EQUAL(c3.is_trump(SPADES), true);
+    
+
 }
 TEST(test_ace_face)
 {
@@ -118,6 +125,18 @@ TEST(operator_not_equal) {
     More = Card(THREE, DIAMONDS);
     ASSERT_EQUAL(More != less, true);
 
+}
+TEST(next_suit) {
+    Card c = Card(THREE, SPADES);
+    ASSERT_EQUAL(Suit_next(CLUBS), c.get_suit());
+    ASSERT_EQUAL(Suit_next(DIAMONDS), HEARTS);
+}
+TEST(Cardless) {
+    Card c1 = Card(JACK, SPADES);
+    Card c2 = Card(JACK, CLUBS);
+    Card c3 = Card(ACE, SPADES);
+    ASSERT_TRUE(Card_less(c1, c2, CLUBS));
+    ASSERT_TRUE(Card_less(c3, c1, CLUBS));
 }
 
 

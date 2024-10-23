@@ -113,19 +113,14 @@ class Game {
         void make_trump() {
             Card upcard = this->pack.deal_one();
             cout << upcard << " turned up" << endl;
-            Suit order_up_suit;
-            bool round_one_trump = false;
-            int i = 0;
-
+             Suit order_up_suit; bool round_one_trump = false; int i = 0;
             while (i < 4 && !round_one_trump) {
                 int player_idx = (this->dealer_idx + i + 1) % 4;
                 bool is_dealer = false;
-
                 if (player_idx == this->dealer_idx) {
                     is_dealer = true;
-                }
-                if (players[player_idx]->make_trump(upcard, is_dealer, 1, order_up_suit)) {
-
+                } if (players[player_idx]->make_trump(upcard,
+                is_dealer,1,order_up_suit)){
                     round_one_trump = true;
                     this->trump_suit = order_up_suit;
                     this->ordered_up_idx = player_idx;
@@ -133,62 +128,30 @@ class Game {
                     << order_up_suit<< endl;
 
                     players[dealer_idx]->add_and_discard(upcard);
-                } 
-                else {
+                }  else {
                     cout << players[player_idx]->get_name() << " passes" << endl;
-                }
-                ++i;
-            }
-            bool round_two_trump = false;
-            int j = 0;
+                } ++i;
+            } bool round_two_trump = false; int j = 0;
             while (!round_one_trump && j < 4 && !round_two_trump) {
                 int player_idx = (this->dealer_idx + j + 1) % 4;
                 bool is_dealer = false;
                 if (player_idx == this->dealer_idx) {
                     is_dealer = true;
-                }
-                if(players[player_idx]->make_trump(upcard, is_dealer, 2, order_up_suit)){
+                } if(players[player_idx]->make_trump(upcard, 
+                is_dealer, 2, order_up_suit)){
                     round_two_trump = true;
                     this->trump_suit = order_up_suit;
                     this->ordered_up_idx = player_idx;
                     cout << players[ordered_up_idx]->get_name() << " orders up " 
                     << order_up_suit << endl;
-                } 
-                else {
-                    cout << players[player_idx]->get_name() << " passes" << endl;
+                }  else {
+                cout << players[player_idx]->get_name() << " passes" << endl;
                 }
                 ++j;
             }
         };
 
-        
-        void play_hand() {
-            int leader_idx = (dealer_idx+1) % 4;
-            int team_trick_evens = 0;
-            int team_trick_odds = 0;
-            for (int i = 0; i < 5; ++i) {
-                Card ledCard = players[leader_idx]->lead_card(this->trump_suit);
-                cout << ledCard << " led by "<< players[leader_idx]->get_name() << endl;
-                Card max = ledCard;
-                int max_idx = leader_idx;
-                for (int j = 0; j < 3; ++j) {
-                    int idx = (leader_idx + 1 + j) % 4;
-                    Card playedCard = players.at(idx)->play_card(ledCard, this->trump_suit);
-                    cout << playedCard << " played by " << players[idx]->get_name() << endl;
-                    if (Card_less(max, playedCard, ledCard, this->trump_suit)) {
-                        max = playedCard;
-                        max_idx = idx;
-                    }
-                }
-                cout << players[max_idx]->get_name() << " takes the trick" << endl;
-                leader_idx = max_idx;
-                if (max_idx % 2 == 0) {
-                    ++team_trick_evens;
-                } else if (max_idx % 2 == 1) {
-                    ++team_trick_odds;
-                }
-                cout << endl;
-            }
+        void winner(int &team_trick_evens, int &team_trick_odds) {
             string p0_name = players[0]->get_name();
             string p1_name = players[1]->get_name();
             string p2_name = players[2]->get_name();
@@ -223,9 +186,45 @@ class Game {
             }
             cout << p0_name << " and " << p2_name 
             << " have " << team_even_points << " points" << endl;
-            
             cout << p1_name << " and " << p3_name 
             << " have " << team_odd_points << " points" << endl;
+        }
+
+        
+        void play_hand() {
+            int leader_idx = (dealer_idx+1) % 4;
+            int team_trick_evens = 0;
+            int team_trick_odds = 0;
+            for (int i = 0; i < 5; ++i) {
+                Card ledCard = players[leader_idx]->lead_card(this->trump_suit);
+                cout << ledCard << " led by "<< players[leader_idx]->get_name() << endl;
+                Card max = ledCard;
+                int max_idx = leader_idx;
+                for (int j = 0; j < 3; ++j) {
+                    int idx = (leader_idx + 1 + j) % 4;
+                    Card playedCard = players.at(idx)->play_card(ledCard, 
+                    this->trump_suit);
+                    cout << playedCard << " played by " << 
+                    players[idx]->get_name() << endl;
+                    if (Card_less(max, playedCard, ledCard, this->trump_suit)) {
+                        max = playedCard;
+                        max_idx = idx;
+                    }
+                }
+                cout << players[max_idx]->get_name() 
+                << " takes the trick" << endl;
+
+                leader_idx = max_idx;
+                if (max_idx % 2 == 0) {
+                    ++team_trick_evens;
+                } else if (max_idx % 2 == 1) {
+                    ++team_trick_odds;
+                }
+                cout << endl;
+            }
+
+            winner(team_trick_evens, team_trick_odds);
+
         };
 };
 

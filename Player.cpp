@@ -43,7 +43,9 @@ class SimplePlayer : public Player {
             int face_or_ace_of_trump = 0;
             for (size_t i = 0; i < hand.size(); ++i) {
                 if ((hand[i].is_face_or_ace() && hand[i].get_suit() == trump_suit) || 
-                (hand[i].is_left_bower(trump_suit) && Suit_next(hand[i].get_suit()) == trump_suit)) {
+                (hand[i].is_left_bower(trump_suit) && 
+                Suit_next(hand[i].get_suit()) == trump_suit)) {
+
                   face_or_ace_of_trump++;
                 }
             }
@@ -59,7 +61,7 @@ class SimplePlayer : public Player {
               return true;
             } else {
               for (size_t i = 0; i < hand.size(); ++i) {
-                if (hand[i].get_suit() == same_color_suit) {
+                if (hand[i].is_face_or_ace() && hand[i].get_suit() == same_color_suit) {
                   order_up_suit = same_color_suit ;
                   return true;
                 }
@@ -78,7 +80,7 @@ class SimplePlayer : public Player {
 
       hand.push_back(upcard); //! Double check
 
-      Card lowest = hand[0];
+      Card lowest = upcard;
       int lowest_idx = 0;
 
       for (size_t i = 0; i < hand.size(); ++i) {
@@ -197,7 +199,7 @@ class HumanPlayer : public Player {
     HumanPlayer(string name)
     : name(name) {};
 
-    const string & get_name() const {
+    const string & get_name() const override{
       return name;
     }
 
