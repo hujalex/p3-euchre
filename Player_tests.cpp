@@ -34,19 +34,14 @@ TEST(test_add_card) {
 TEST(test_add_discard)
 {
     Player* bob = Player_factory("Bob", "Simple");
+    Card upcard = Card(JACK,SPADES);
     bob->add_card(Card(NINE, SPADES));
     bob->add_card(Card(TEN, SPADES));
     bob->add_card(Card(QUEEN, SPADES));
     bob->add_card(Card(KING, SPADES));
     bob->add_card(Card(ACE, SPADES));
-
-    
-    bob->add_and_discard(Card(JACK, SPADES));
-    bob->add_and_discard(Card(JACK, DIAMONDS));
-    bob->add_and_discard(Card(JACK, HEARTS));
-    bob->add_and_discard(Card(JACK, CLUBS));
-
-
+    bob->add_and_discard(upcard);
+    delete bob;
 
 }
 TEST(test_trump) {
@@ -312,6 +307,20 @@ TEST(test_lead4)
     ASSERT_EQUAL(Card(JACK,HEARTS), card_led);
     delete bob;
 }
+TEST(test_lead5)
+{
+    Player * bob = Player_factory("Bob", "Simple");
+    bob->add_card(Card(TEN, HEARTS));
+    bob->add_card(Card(JACK, HEARTS));
+    bob->add_card(Card(QUEEN, HEARTS));
+    bob->add_card(Card(KING, HEARTS));
+    bob->add_card(Card(JACK, DIAMONDS));
+    bob->add_and_discard(Card(ACE,DIAMONDS));
+
+    Card card_led = bob->lead_card(HEARTS);
+    ASSERT_EQUAL(Card(JACK,HEARTS), card_led);
+    delete bob;
+}
 TEST(test_play_card) {
   // Bob's hand
   Player * bob = Player_factory("Bob", "Simple");
@@ -320,7 +329,6 @@ TEST(test_play_card) {
   bob->add_card(Card(QUEEN, SPADES));
   bob->add_card(Card(KING, SPADES));
   bob->add_card(Card(ACE, SPADES));
-
   // Bob plays a card
   Card c(JACK,SPADES);
   Card card_played = bob->play_card(
@@ -370,6 +378,26 @@ TEST(test_play_card3) {
 
   // Verify the card Bob played
   ASSERT_EQUAL(card_played, Card(QUEEN,DIAMONDS));
+  delete bob;
+}
+TEST(test_play_card4) {
+  // Bob's hand
+  Player * bob = Player_factory("Bob", "Simple");
+  bob->add_card(Card(JACK, CLUBS));
+  bob->add_card(Card(TEN, SPADES));
+  bob->add_card(Card(QUEEN, SPADES));
+  bob->add_card(Card(KING, SPADES));
+  bob->add_card(Card(ACE, SPADES));
+  // Bob plays a card
+  Card upcard(JACK,SPADES);
+  bob->add_and_discard(upcard);
+  Card card_played = bob->play_card(
+    upcard,
+    SPADES    // Trump suit
+  ); 
+
+  // Verify the card Bob played
+  ASSERT_EQUAL(card_played, upcard);
   delete bob;
 }
 TEST(test_os)
